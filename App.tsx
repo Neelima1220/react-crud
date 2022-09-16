@@ -30,20 +30,30 @@ const fakeData = [
 ];
 
 export default function App() {
-  const [data, setData] = React.useState(fakeData);
+  const [data, setData] = React.useState(
+    localStorage.getItem('data')
+      ? JSON.parse(localStorage.getItem('data'))
+      : fakeData
+  );
   const [showModal, setShowModal] = React.useState(false);
   const [edit, setEdit] = React.useState(false);
   const [name, setName] = React.useState('');
   const [age, setAge] = React.useState('');
 
+  const inputRef = React.useRef();
+
   const handleCreate = () => {
     setShowModal(true);
+    // if (inputRef) {
+    //   inputRef.current.focus();
+    // }
+    console.log(inputRef);
   };
   const handleAdd = () => {
     const tempData = [...data];
     const newItem = { id: data.length + 1, name, age };
-    localStorage.setItem('data', JSON.stringify([...tempData, newItem]));
     setData([...tempData, newItem]);
+    localStorage.setItem('data', JSON.stringify([...tempData, newItem]));
     setShowModal(false);
   };
 
@@ -62,6 +72,7 @@ export default function App() {
               style={{ marginRight: '1rem', padding: '0.5rem' }}
               value={name}
               onChange={(e) => setName(e.target.value)}
+              ref={inputRef}
             />
             <input
               placeholder="age"
