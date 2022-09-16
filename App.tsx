@@ -40,6 +40,7 @@ export default function App() {
   const [name, setName] = useState('');
   const [age, setAge] = useState();
   const [editId, setEditId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const inputElement = useRef();
 
@@ -129,26 +130,31 @@ export default function App() {
       <input
         style={{ marginBottom: '2rem' }}
         placeholder="search for the person"
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
       <table className="table">
         <tbody>
           {data?.length &&
-            data.map((item, index) => {
-              return (
-                <tr key={index}>
-                  <td>{item.name}</td>
-                  <td>{item.age}</td>
-                  <td className="edit" onClick={() => handleEdit(index)}>
-                    {' '}
-                    Edit{' '}
-                  </td>
-                  <td className="remove" onClick={() => handleRemove(index)}>
-                    {' '}
-                    remove{' '}
-                  </td>
-                </tr>
-              );
-            })}
+            data
+              .filter((item) =>
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((item, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{item.name}</td>
+                    <td>{item.age}</td>
+                    <td className="edit" onClick={() => handleEdit(index)}>
+                      {' '}
+                      Edit{' '}
+                    </td>
+                    <td className="remove" onClick={() => handleRemove(index)}>
+                      {' '}
+                      remove{' '}
+                    </td>
+                  </tr>
+                );
+              })}
         </tbody>
       </table>
       <div style={{ marginTop: '2rem' }}>
