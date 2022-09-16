@@ -38,12 +38,15 @@ export default function App() {
   const [showModal, setShowModal] = useState(false);
   const [edit, setEdit] = useState(false);
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
+  const [age, setAge] = useState();
+  const [editId, setEditId] = useState(null);
 
   const inputElement = useRef();
 
   const handleCreate = () => {
     setShowModal(true);
+    setName('');
+    setAge(null);
     setTimeout(() => {
       console.log(inputElement);
       inputElement.current.focus();
@@ -51,9 +54,21 @@ export default function App() {
   };
   const handleAdd = () => {
     const tempData = [...data];
-    const newItem = { id: data.length + 1, name, age };
-    setData([...tempData, newItem]);
-    localStorage.setItem('data', JSON.stringify([...tempData, newItem]));
+    if (edit) {
+      const newData = tempData.map((item, index) => {
+        if (index === editId) {
+          return { ...item, name, age };
+        } else {
+          return item;
+        }
+      });
+      setData(newData);
+      localStorage.setItem('data', JSON.stringify(newData));
+    } else {
+      const newItem = { id: data.length + 1, name, age };
+      setData([...tempData, newItem]);
+      localStorage.setItem('data', JSON.stringify([...tempData, newItem]));
+    }
     setShowModal(false);
   };
   const handleClear = () => {
@@ -67,9 +82,13 @@ export default function App() {
   };
   const handleEdit = (i) => {
     const tempData = [...data];
-    // const newItem = tempData.find((item, index) => index === i);
-    // console.log(newItem);
-
+    setShowModal(true);
+    const newItem = tempData.find((item, index) => index === i);
+    const { id, name, age } = newItem;
+    setName(name);
+    setAge(age);
+    setEdit(true);
+    setEditId(i);
     // setData(newData);
     // localStorage.setItem('data', JSON.stringify(newData));
   };
@@ -103,7 +122,7 @@ export default function App() {
             />
           </div>
           <button style={{ padding: '0.5rem' }} onClick={handleAdd}>
-            {edit ? 'edit' : 'Add'}{' '}
+            {edit ? 'update' : 'Add'}{' '}
           </button>
         </div>
       )}
