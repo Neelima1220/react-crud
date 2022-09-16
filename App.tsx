@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useRef, useState } from 'react';
 import './style.css';
 
 const fakeData = [
@@ -30,24 +30,24 @@ const fakeData = [
 ];
 
 export default function App() {
-  const [data, setData] = React.useState(
+  const [data, setData] = useState(
     localStorage.getItem('data')
       ? JSON.parse(localStorage.getItem('data'))
       : fakeData
   );
-  const [showModal, setShowModal] = React.useState(false);
-  const [edit, setEdit] = React.useState(false);
-  const [name, setName] = React.useState('');
-  const [age, setAge] = React.useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
 
-  const inputRef = React.useRef();
+  const inputElement = useRef();
 
   const handleCreate = () => {
     setShowModal(true);
-    // if (inputRef) {
-    //   inputRef.current.focus();
-    // }
-    console.log(inputRef);
+    setTimeout(() => {
+      console.log(inputElement);
+      inputElement.current.focus();
+    }, 50);
   };
   const handleAdd = () => {
     const tempData = [...data];
@@ -56,12 +56,32 @@ export default function App() {
     localStorage.setItem('data', JSON.stringify([...tempData, newItem]));
     setShowModal(false);
   };
+  const handleClear = () => {
+    setData([]);
+  };
+  const handleRemove = (i) => {
+    const tempData = [...data];
+    const newData = tempData.filter((_, index) => index !== i);
+    setData(newData);
+    localStorage.setItem('data', JSON.stringify(newData));
+  };
+  const handleEdit = (i) => {
+    const tempData = [...data];
+    // const newItem = tempData.find((item, index) => index === i);
+    // console.log(newItem);
+
+    // setData(newData);
+    // localStorage.setItem('data', JSON.stringify(newData));
+  };
 
   return (
     <div className="container">
       {showModal && (
         <div className="modal">
-          <button style={{ position: 'absolute', top: '1rem', right: '2rem' }}>
+          <button
+            style={{ position: 'absolute', top: '1rem', right: '2rem' }}
+            onClick={() => setShowModal(false)}
+          >
             {' '}
             close{' '}
           </button>
@@ -72,7 +92,7 @@ export default function App() {
               style={{ marginRight: '1rem', padding: '0.5rem' }}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              ref={inputRef}
+              ref={inputElement}
             />
             <input
               placeholder="age"
@@ -92,23 +112,31 @@ export default function App() {
         placeholder="search for the person"
       />
       <table className="table">
-        {data &&
-          data.map((item, index) => {
-            return (
-              <tr>
-                <td>{item.name}</td>
-                <td>{item.age}</td>
-                <td className="edit"> Edit </td>
-                <td className="remove"> remove </td>
-              </tr>
-            );
-          })}
+        <tbody>
+          {data?.length &&
+            data.map((item, index) => {
+              return (
+                <tr key={index}>
+                  <td>{item.name}</td>
+                  <td>{item.age}</td>
+                  <td className="edit" onClick={() => handleEdit(index)}>
+                    {' '}
+                    Edit{' '}
+                  </td>
+                  <td className="remove" onClick={() => handleRemove(index)}>
+                    {' '}
+                    remove{' '}
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
       </table>
       <div style={{ marginTop: '2rem' }}>
         <button style={{ marginRight: '2rem' }} onClick={handleCreate}>
           create
         </button>
-        <button>clear all</button>
+        <button onClick={handleClear}>clear all</button>
       </div>
     </div>
   );

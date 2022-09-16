@@ -18,9 +18,11 @@ td {
 }
 .edit {
   background-color: yellow;
+  cursor: pointer;
 }
 .remove {
   background-color: red;
+  cursor: pointer;
 }
 .modal {
   background-color: lightgray;
